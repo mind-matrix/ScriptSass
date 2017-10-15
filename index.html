@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>A JS SCSS Compiler</title>
+</head>
+<body>
+<div>
+<header>JsSCSS - Introduction</header>
+	The JsSCSS is a javascript Sass dynamic compiler. It works both with .sass files and inline scss code.
+	Just load the file in a script tag using this line of javascript code -<br/>
+	<span class="black">JsSCSS.load("relative-url-to-file");</span><br/>
+	And, to load it from an inline code-block, write the code-block in a <span class="green">&lt;code type=<span class="blue">"sass"</span>&gt;&lt;/code&gt;</span> block, and run
+	the following JS line-<br/>
+	<span class="black">JsSCSS.compileInline();</span><br/>
+	Please note that JsSCSS requires that you load JQuery first.<br/>
+	You can use this code to load JQuery followed JsSCSS :<br/>
+	<pre class="black">
+	&lt;script src=<span class="blue">"jquery-3.2.1.min.js"</span>&gt;&lt;/script&gt;
+	&lt;script src=<span class="blue">"jsass.current.js"</span>&gt;&lt;/script&gt;
+	</pre>
+	A very basic syntax would be:<br/>
+	<pre class="black">
+	$(document).ready(<span class="dblue">function</span> (){
+		JsSCSS.compileInline();  <span class="green">//compiles inline SCSS codes</span>
+	}
+	</pre><br/>
+	I am still working on this project. As of now, it supports only the following features:<br/>
+	<ul>
+		<li>SCSS syntax, not exactly Sass syntax. Semi-colons at end of statements are must</li>
+		<li>Sass variables (except Maps)</li>
+		<li>extend directive</li>
+		<li>mixins</li>
+		<li>nested css selectors</li>
+		<li>Code minification</li>
+	</ul>
+	<div class="update">
+	Update
+	<ul>
+		<li>Added support for nested selectors</li>
+		<li>Removed support for @import to make some improvements to it</li>
+		<li>Added mixin support (may have gotchas)</li>
+		<li>Faster processing</li>
+	</ul>
+	Up Next
+	<ul>
+		<li>Improved @import support</li>
+		<li>Conditional directives</li>
+		<li>Maps and basic map functions</li>
+	</ul>
+	</div>
+	This page is compiled with JsSCSS! See the <a class="vs">source code</a> to get an idea of how to implement it.
+</div>
+<code type="sass">
+	$uc: #ffe68c;
+	.update{
+		color: green;
+		ul{
+			color: $uc;
+			li{
+				list-style-type: square;
+			}
+		}
+	}
+	pre{
+		font-family: Arial,Helvetica;
+	}
+	a.vs{
+		color: blue;
+		cursor:pointer;
+	}
+</code>
+<script src="jquery-3.2.1.min.js"></script>
+<script src="jsscss.js"></script>
+<script>
+
+$(document).ready(function (){
+	JsSCSS.load("style.sass");
+	JsSCSS.compileInline();
+});
+</script>
+</body>
+</html>
