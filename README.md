@@ -16,6 +16,7 @@ Some of the disadvantages are:
 1. Page may flicker upon initial load because compiling the SCSS takes some time
 2. CPU usage of end-user may increase
 
+The big takeaway - it's still only 8 kB (minified)
 For a hands-on experience of it's working, go to [docs](http://mskies.web44.net/jsass/index.html).
 
 Currently it supports:
