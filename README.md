@@ -30,10 +30,10 @@ Currently it supports:
 
 I am planning to add:
 
-[] Improved @import support
-[] Conditional directives
-[] Maps and basic map functions
-[] SCSS expressions
+- [ ] Improved @import support
+- [ ] Conditional directives
+- [ ] Maps and basic map functions
+- [ ] SCSS expressions
 
 This is an Open Source Project. Any help is gratefully accepted.
 
@@ -58,7 +58,7 @@ To include it in your HTML file you can use the script tag as follows:
 
 Currently, JsSCSS can compile SCSS code from 3 sources:
 
-####From SASS file
+#### From SASS file
 
 To compile and include SCSS code from a file, name it in the format [your-file-name].sass and then in your web page using:
 
@@ -73,7 +73,7 @@ For instance, to load a file with the url *css/styles.sass* into your *index.htm
 JsSCSS.load("css/styles.sass");
 ```
 
-####From Inline SCSS Code
+#### From Inline SCSS Code
 JsSCSS supports a special inline SCSS code. Wrap up your SCSS code inside a ```<code type="sass"></code>``` block. For instance:
 
 ```
@@ -104,7 +104,7 @@ JsSCSS.compileInline();
 
 Basically, it compiles all SCSS code within all code blocks (such as the previous) found in the entire document.
 
-####From source SCSS as String
+#### From source SCSS as String
 
 For more grip over your CSS, you can also compile an SCSS code as a string and get CSS as an output String.
 For example, if I have the following Javascript string:
@@ -132,7 +132,7 @@ body p{padding: 10px}body{background-color:yellow}
 
 For more advanced controls over your SCSS code, see the Advanced section below.
 
-##Advanced Functions
+## Advanced Functions
 
 The JsSCSS compiler uses the following methods to compile the code:
 1. tokenize() - tokenizes code into segments for better understanding of structure
