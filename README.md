@@ -12,7 +12,7 @@ Some of the advantages are:
 2. You can dynamically insert, compile and delete SCSS code using Javascript.
 3. Code minification is an included feature
 4. Better collaboration of CSS with Javascript
-5. It can evaluate SCSS expressions involving px and % together (support yet to be included)
+5. It can also evaluate SCSS expressions involving px and % together.
 
 Some of the disadvantages are:
 1. Page may flicker upon initial load because compiling the SCSS takes some time
@@ -35,7 +35,7 @@ I am planning to add:
 - [ ] Improved @import support
 - [ ] Conditional directives
 - [ ] Maps and basic map functions
-- [ ] SCSS expressions
+- [x] SCSS expressions
 
 This is an Open Source Project. Any help is gratefully accepted.
 
