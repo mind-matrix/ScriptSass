@@ -1,12 +1,12 @@
-# JsSCSS
+# ScriptSass
 <p align="center">
-<img src="http://mskies.web44.net/thumbs/jsass.png" width="250" />
+<img src="http://mskies.web44.net/thumbs/scriptsass.png" width="250" />
 </p>
 A Javascript-based Sass/SCSS interpreter
 
 ## Getting Started
 
-JsSCSS is a client-side Sass/SCSS compiler. Being client-side, it can do a lot of stuff that a server-side SCSS compiler cannot. But it has it's own limitations too.
+ScriptSass is a client-side Sass/SCSS compiler. Being client-side, it can do a lot of stuff that a server-side SCSS compiler cannot. But it has it's own limitations too.
 Some of the advantages are:
 1. Changes to SCSS files automatically appear in the compiled CSS (no need for a watcher)
 2. You can dynamically insert, compile and delete SCSS code using Javascript.
@@ -19,7 +19,7 @@ Some of the disadvantages are:
 2. CPU usage of end-user may increase
 
 The big takeaway - it's still only 8 kB (minified)
-For a hands-on experience of it's working, go to [docs](http://mskies.web44.net/jsass/index.html).
+For a hands-on experience of it's working, go to [docs](http://mskies.web44.net/scriptsass/index.html).
 
 Currently it supports:
 
@@ -43,7 +43,7 @@ This is my first Open Source Project and first Project published on GitHub. Sugg
 
 ### Prerequisites
 
-JsSCSS requires JQuery 3.2.1 to be included. Copy and paste the following lines into your web file before including JsSCSS
+ScriptSass requires JQuery 3.2.1 to be included. Copy and paste the following lines into your web file before including ScriptSass
 
 ```HTML
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
@@ -51,32 +51,32 @@ JsSCSS requires JQuery 3.2.1 to be included. Copy and paste the following lines 
 
 ### Installing
 
-You can download the current state of code as a js file [here](http://mskies.web44.net/jsscss/jsscss.js)
+You can download the current state of code as a js file [here](http://mskies.web44.net/scriptsass/scriptsass.current.js)
 
 To include it in your HTML file you can use the script tag as follows:
 ```HTML
-<script src="jsscss.js"></script>
+<script src="scriptsass.js"></script>
 ```
 
-Currently, JsSCSS can compile SCSS code from 3 sources:
+Currently, ScriptSass can compile SCSS code from 3 sources:
 
 #### From SASS file
 
 To compile and include SCSS code from a file, name it in the format [your-file-name].sass and then in your web page using:
 
 ```JavaScript
-JsSCSS.load("[your-file-name].sass");
+ScriptSass.load("[your-file-name].sass");
 ```
 
 For files located in other directories, you can use the relative URL of the file with respect to the actual calling web page
 For instance, to load a file with the url *css/styles.sass* into your *index.html* located in the root, you can use the following code in your *index.html*:
 
 ```
-JsSCSS.load("css/styles.sass");
+ScriptSass.load("css/styles.sass");
 ```
 
 #### From Inline SCSS Code
-JsSCSS supports a special inline SCSS code. Wrap up your SCSS code inside a ```<code type="sass"></code>``` block. For instance:
+ScriptSass supports a special inline SCSS code. Wrap up your SCSS code inside a ```<code type="sass"></code>``` block. For instance:
 
 ```HTML
 <code type="sass">
@@ -101,7 +101,7 @@ JsSCSS supports a special inline SCSS code. Wrap up your SCSS code inside a ```<
 The above code can then be compiled using the following line of Javascript code:
 
 ```JavaScript
-JsSCSS.compileInline();
+ScriptSass.compileInline();
 ```
 
 Basically, it compiles all SCSS code within all code blocks (such as the previous) found in the entire document.
@@ -120,9 +120,9 @@ body{ \
 	} \
 ";
 ```
-Then I can compile it with JsSCSS by using the **compile()** function as follows:
+Then I can compile it with ScriptSass by using the **compile()** function as follows:
 ```JavaScript
-var css = JsSCSS.compile(code);
+var css = ScriptSass.compile(code);
 console.log(css);
 /*
 Output to console:
@@ -136,14 +136,14 @@ For more advanced controls over your SCSS code, see the Advanced section below.
 
 ## Advanced Functions
 
-The JsSCSS compiler uses the following methods to compile the code:
+The ScriptSass compiler uses the following methods to compile the code:
 1. **tokenize()** - tokenizes code into segments for better understanding of structure
 2. **lexer()** - converts basic tokens to Abstract Syntax Tree format, separating variables, imports and mixins from the actual code
 3. **parse()** - parses the Abstract Syntax Tree into usable CSS code, substituting variables, evaluating includes and so on.
 4. **compileInternal()** - recursively compiles the parsed syntax tree from parse() function into includable CSS code
 
 You can use any of the above functions separately to get/use the respective outputs.
-I hope the [source code](http://mskies.web44.net/jsass/jsass.js) and included comments will suffice to explain each of these functions to all viewers.
+I hope the [source code](http://mskies.web44.net/scriptsass/scriptsass.current.js) and included comments will suffice to explain each of these functions to all viewers.
 If not, you can always contact me or leave an email.
 
 ## Deployment
@@ -160,9 +160,9 @@ Please read [CONTRIBUTING.md](https://gist.github.com/) for details on our code 
 
 ## Authors
 
-* **Sagnik Modak** - *Initial Author and currently working on project* - [JsSCSS](https://github.com/JsSCSS/)
+* **Sagnik Modak** - *Initial Author and currently working on project* - [ScriptSass](https://github.com/ScriptSass/)
 
-See also the list of [contributors](https://github.com/JsSCSS/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/ScriptSass/contributors) who participated in this project.
 
 ## License
 
