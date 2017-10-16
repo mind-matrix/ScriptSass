@@ -1,5 +1,5 @@
 /*
-JsSCSS - A Javascript SCSS compiler
+ScriptSass - A Javascript SCSS compiler
 
 Copyright (C) 2017  Sagnik Modak
 
@@ -32,8 +32,8 @@ function splitWithTail(str,delim,count){
   return result;
 }
 
-var JsSCSS = new Object();
-JsSCSS.inString = function(i,arr){
+var ScriptSass = new Object();
+ScriptSass.inString = function(i,arr){
 					var j;
 					var inString = 2;
 					for(j=0;j<i;j++){
@@ -42,7 +42,7 @@ JsSCSS.inString = function(i,arr){
 					}
 					return (inString%2 == 0)?true:false;
 	};
-JsSCSS.findClosure = function(arr,i){
+ScriptSass.findClosure = function(arr,i){
 					var j;
 					var go = 0;
 					for(j=i+1;j<arr.length;j++){
@@ -56,7 +56,7 @@ JsSCSS.findClosure = function(arr,i){
 					return j;
 	};
 	
-JsSCSS.isProperty = function(v){
+ScriptSass.isProperty = function(v){
 							var pattern = new RegExp("^[^\$:].+$");
 							if(pattern.test(v) && v.indexOf(":") > -1){
 								return true;
@@ -64,7 +64,7 @@ JsSCSS.isProperty = function(v){
 							return false;
 	};
 
-JsSCSS.replaceVars = function(str,vars){
+ScriptSass.replaceVars = function(str,vars){
 						var i;
 						var parts = str.split(/([:\s])+/g);
 						for(i=0;i<parts.length;i++){
@@ -74,7 +74,7 @@ JsSCSS.replaceVars = function(str,vars){
 						return parts.join("");
 };
 	
-JsSCSS.replacePlaceholder = function(name,parentstr){
+ScriptSass.replacePlaceholder = function(name,parentstr){
 							if(name.indexOf("&") > -1){
 								parentstr = parentstr.trim();
 								var pstr = parentstr.split(" ");
@@ -84,7 +84,7 @@ JsSCSS.replacePlaceholder = function(name,parentstr){
 							}else
 								return (parentstr+name).trim();
 };
-JsSCSS.tokenize = function(rawcode,parentstr=""){
+ScriptSass.tokenize = function(rawcode,parentstr=""){
 		var par = parentstr;
 		var code = rawcode.replace(/[^\x20-\x7E]/gmi, "").split('"').map(function(v,i){
 				if(i%2){
@@ -124,10 +124,10 @@ JsSCSS.tokenize = function(rawcode,parentstr=""){
 					var func_var_list = func_def.substring(func_def.indexOf("(")+1,func_def.indexOf(")")).split(",");
 					for(k=0;k<func_var_list.length;k++)
 						func_var_list[k] = func_var_list[k].trim();
-					var func_body = arr.slice(i+2,JsSCSS.findClosure(arr,i)).join('');
-					var closure = JsSCSS.findClosure(arr,i+1) - i;
+					var func_body = arr.slice(i+2,ScriptSass.findClosure(arr,i)).join('');
+					var closure = ScriptSass.findClosure(arr,i+1) - i;
 					arr.splice(i+1,closure);
-					return {type:"mixin",data:{name:func_name,params:func_var_list,data:JsSCSS.tokenize(func_body,par)}};
+					return {type:"mixin",data:{name:func_name,params:func_var_list,data:ScriptSass.tokenize(func_body,par)}};
 				}
 				if(v.startsWith("@include")){
 					var inc_def = splitWithTail(v," ",1)[1];
@@ -138,7 +138,7 @@ JsSCSS.tokenize = function(rawcode,parentstr=""){
 					return {type:"include",name:inc_name,params:inc_params};
 				}
 			}
-			if(JsSCSS.isProperty(v) && (arr[i+1] == ";" || i == arr.length-1)){
+			if(ScriptSass.isProperty(v) && (arr[i+1] == ";" || i == arr.length-1)){
 				var prop_def = splitWithTail(v,":",1);
 				var prop_name = prop_def[0];
 				var prop_data = prop_def[1];
@@ -146,11 +146,11 @@ JsSCSS.tokenize = function(rawcode,parentstr=""){
 			}
 			if(arr[i+1] == "{"){
 				var sel_name = v;
-				var sel_body = arr.slice(i+2,JsSCSS.findClosure(arr,i)).join('');
-				var closure = JsSCSS.findClosure(arr,i+1) - i;
+				var sel_body = arr.slice(i+2,ScriptSass.findClosure(arr,i)).join('');
+				var closure = ScriptSass.findClosure(arr,i+1) - i;
 				arr.splice(i+1,closure);
 				var pstr = par+sel_name+" ";
-				return {type:"selector",data:{name:sel_name,data:JsSCSS.tokenize(sel_body,pstr)},parent_string:par};
+				return {type:"selector",data:{name:sel_name,data:ScriptSass.tokenize(sel_body,pstr)},parent_string:par};
 			}
 			if(v.startsWith("$")){
 					var var_def = splitWithTail(v,":",1);
@@ -186,7 +186,7 @@ JsSCSS.tokenize = function(rawcode,parentstr=""){
 		});
 		return tokens;
 };
-JsSCSS.lexer = function (tk,sel_list = [],flag = 0,varlist = {},mixlist = {}){
+ScriptSass.lexer = function (tk,sel_list = [],flag = 0,varlist = {},mixlist = {}){
 	var i;
 	var vars = varlist;
 	var mixins = mixlist;
@@ -217,8 +217,8 @@ JsSCSS.lexer = function (tk,sel_list = [],flag = 0,varlist = {},mixlist = {}){
 					var sel = tk[i];
 					tk.splice(i,1);
 					i--;
-					sel.data.data = JsSCSS.lexer(sel.data.data,sel_list,1);
-					sel_list.push({"name":JsSCSS.replacePlaceholder(sel.data.name,sel.parent_string),data:sel.data.data});
+					sel.data.data = ScriptSass.lexer(sel.data.data,sel_list,1);
+					sel_list.push({"name":ScriptSass.replacePlaceholder(sel.data.name,sel.parent_string),data:sel.data.data});
 					continue;
 				}
 				if(tk[i].type == "property"){
@@ -240,20 +240,20 @@ JsSCSS.lexer = function (tk,sel_list = [],flag = 0,varlist = {},mixlist = {}){
 	else
 		return {variables:vars,mixes:mixins,imports:imports,selectors:sel_list};
 };
-JsSCSS.parse = function(ast){
+ScriptSass.parse = function(ast){
 				var i,j,k;
 				//variable and include replacements
 				if(ast.hasOwnProperty('selectors')){
 					for(i=0;i<ast.selectors.length;i++){
-						ast.selectors[i].name = JsSCSS.replaceVars(ast.selectors[i].name,ast.variables);
+						ast.selectors[i].name = ScriptSass.replaceVars(ast.selectors[i].name,ast.variables);
 						for(j=0;j<ast.selectors[i].data.props.length;j++){
 							if(ast.selectors[i].data.props[j].type == "property"){
-								ast.selectors[i].data.props[j].data.name = JsSCSS.replaceVars(ast.selectors[i].data.props[j].data.name,ast.variables);
+								ast.selectors[i].data.props[j].data.name = ScriptSass.replaceVars(ast.selectors[i].data.props[j].data.name,ast.variables);
 								for(var attr in ast.variables){
 									if(!ast.selectors[i].data.variables.hasOwnProperty(attr))
 										ast.selectors[i].data.variables[attr]=ast.variables[attr];
 								}
-								ast.selectors[i].data.props[j].data.data = JsSCSS.replaceVars(ast.selectors[i].data.props[j].data.data,ast.selectors[i].data.variables);
+								ast.selectors[i].data.props[j].data.data = ScriptSass.replaceVars(ast.selectors[i].data.props[j].data.data,ast.selectors[i].data.variables);
 							}else if(ast.selectors[i].data.props[j].type == "include"){
 								var params = ast.selectors[i].data.props[j].params;
 								var fname = ast.selectors[i].data.props[j].name;
@@ -267,7 +267,7 @@ JsSCSS.parse = function(ast){
 								for(k=0;k<ast.selectors[i].data.mixes[fname].params.length;k++){
 									vlist[ast.selectors[i].data.mixes[fname].params[k]] = {type:"expression",data:params[k]};
 								}
-								var props = JsSCSS.parse(JsSCSS.lexer(ast.selectors[i].data.mixes[fname].data,[],1,vlist,ast.selectors[i].data.mixes)).props;
+								var props = ScriptSass.parse(ScriptSass.lexer(ast.selectors[i].data.mixes[fname].data,[],1,vlist,ast.selectors[i].data.mixes)).props;
 								ast.selectors[i].data.props = ast.selectors[i].data.props.concat(props);
 							}
 						}
@@ -275,8 +275,8 @@ JsSCSS.parse = function(ast){
 				}else if(ast.hasOwnProperty('props')){
 					for(j=0;j<ast.props.length;j++){
 							if(ast.props[j].type == "property"){
-								ast.props[j].data.name = JsSCSS.replaceVars(ast.props[j].data.name,ast.variables);
-								ast.props[j].data.data = JsSCSS.replaceVars(ast.props[j].data.data,ast.variables);
+								ast.props[j].data.name = ScriptSass.replaceVars(ast.props[j].data.name,ast.variables);
+								ast.props[j].data.data = ScriptSass.replaceVars(ast.props[j].data.data,ast.variables);
 							}else if(ast.props[j].type == "include"){
 								var params = ast.props[j].params;
 								var fname = ast.props[j].name;
@@ -286,19 +286,19 @@ JsSCSS.parse = function(ast){
 								for(k=0;k<ast.mixes[fname].params.length;k++){
 									vlist[ast.mixes[fname].params[k]] = {type:"expression",data:params[k]};
 								}
-								var props = JsSCSS.parse(JsSCSS.lexer(ast.selectors[i].data.mixes[fname].data,[],1,vlist,ast.mixes)).props;
+								var props = ScriptSass.parse(ScriptSass.lexer(ast.selectors[i].data.mixes[fname].data,[],1,vlist,ast.mixes)).props;
 								ast.props = ast.props.concat(props);
 							}
 						}
 				}
 				return ast;
 };
-JsSCSS.compileInternal = function(ast){
+ScriptSass.compileInternal = function(ast){
 					var i;
 					var css="";
 					if(ast.hasOwnProperty('selectors')){
 						for(i=0;i<ast.selectors.length;i++){
-							css+=ast.selectors[i].name+"{"+JsSCSS.compileInternal(ast.selectors[i].data)+"}";
+							css+=ast.selectors[i].name+"{"+ScriptSass.compileInternal(ast.selectors[i].data)+"}";
 						}
 					}else if(ast.hasOwnProperty('props')){
 						for(i=0;i<ast.props.length;i++){
@@ -308,17 +308,17 @@ JsSCSS.compileInternal = function(ast){
 					}
 					return css;
 };
-JsSCSS.compile = function(code){
-					return JsSCSS.compileInternal(JsSCSS.parse(JsSCSS.lexer(JsSCSS.tokenize(code))));
+ScriptSass.compile = function(code){
+					return ScriptSass.compileInternal(ScriptSass.parse(ScriptSass.lexer(ScriptSass.tokenize(code))));
 };
-JsSCSS.compileInline = function(){
+ScriptSass.compileInline = function(){
 		$('code[type="sass"]').each(function (){
 			$(this).hide();
 			code = $(this).html();
-			($('head').find('style').length > 0) ? $('head style').append(JsSCSS.compile(code)):$('head').append('<style>'+JsSCSS.compile(code)+'</style>');
+			($('head').find('style').length > 0) ? $('head style').append(ScriptSass.compile(code)):$('head').append('<style>'+ScriptSass.compile(code)+'</style>');
 		});
 };
-JsSCSS.load = function(file){
+ScriptSass.load = function(file){
 				var code="";
 				$.ajax({
 					url: file,
@@ -327,10 +327,10 @@ JsSCSS.load = function(file){
 					},
 					async: false
 				});
-				($('head').find('style').length > 0) ? $('head style').append(JsSCSS.compile(code)):$('head').append('<style>'+JsSCSS.compile(code)+'</style>');
+				($('head').find('style').length > 0) ? $('head style').append(ScriptSass.compile(code)):$('head').append('<style>'+ScriptSass.compile(code)+'</style>');
 };
 
-example = JsSCSS.compile(' \
+example = ScriptSass.compile(' \
 	@import test; \
 	@mixin $cool($v1){ \
 		padding: $v1; \
