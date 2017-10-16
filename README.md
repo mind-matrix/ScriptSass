@@ -156,7 +156,7 @@ This project is NOT YET PRODUCTION-READY
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://gist.github.com/) for details on our code of conduct, and the process for submitting pull requests to us.
+As I am quite new to Github, I would appreciate some help in creating a CONTRIBUTING.md file with guidelines on how to contribute.
 
 ## Authors
 
