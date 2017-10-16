@@ -32,6 +32,12 @@ function splitWithTail(str,delim,count){
   return result;
 }
 
+function findFirstPositive(b, a, i, c) {
+  c=(d,e)=>e>=d?(a=d+(e-d)/2,0<b(a)&&(a==d||0>=b(a-1))?a:0>=b(a)?c(a+1,e):c(d,a-1)):-1
+  for (i = 1; 0 >= b(i);) i *= 2
+  return c(i / 2, i)|0
+}
+
 var ScriptSass = new Object();
 ScriptSass.inString = function(i,arr){
 					var j;
@@ -84,6 +90,68 @@ ScriptSass.replacePlaceholder = function(name,parentstr){
 							}else
 								return (parentstr+name).trim();
 };
+
+ScriptSass.evaluateExpression = function(exp,base_fs=16){
+									var i,n;
+									var nums = exp.match(/(\d+\.?\d*\s?)(px|em|vh|vw|%|cm|mm|in|pt|pc|rem|vmax|vmin)/g);
+									var width = $(window).width();
+									var height = $(window).height();
+									var dpi = findFirstPositive(x => matchMedia(`(max-resolution: ${x}dpi)`).matches);
+									if(nums != null){
+										for(i=0;i<nums.length;i++){
+											if(nums[i].endsWith("%")){
+												n = nums[i].substring(0,nums[i].indexOf("%")).trim();
+												exp = exp.replace(nums[i],(n*width/100));
+											}else if(nums[i].endsWith("px")){
+												exp = exp.replace(nums[i],nums[i].substring(0,nums[i].indexOf("px")).trim());
+											}else if(nums[i].endsWith("vw")){
+												n = nums[i].substring(0,nums[i].indexOf("vw")).trim();
+												exp = exp.replace(nums[i],n*width/100);
+											}else if(nums[i].endsWith("vh")){
+												n = nums[i].substring(0,nums[i].indexOf("vh")).trim();
+												exp = exp.replace(nums[i],n*height/100);
+											}else if(nums[i].endsWith("em")){
+												n = nums[i].substring(0,nums[i].indexOf("em")).trim();
+												exp = exp.replace(nums[i],n*base_fs);
+											}else if(nums[i].endsWith("vmax")){
+												n = nums[i].substring(0,nums[i].indexOf("vmax")).trim();
+												exp = exp.replace(nums[i],n*Math.max(width,height));
+											}else if(nums[i].endsWith("vmin")){
+												n = nums[i].substring(0,nums[i].indexOf("vmin")).trim();
+												exp = exp.replace(nums[i],n*Math.min(width,height));
+											}else if(nums[i].endsWith("pt")){
+												n = nums[i].substring(0,nums[i].indexOf("pt")).trim();
+												exp = exp.replace(nums[i],n*dpi/72);
+											}else if(nums[i].endsWith("pc")){
+												n = nums[i].substring(0,nums[i].indexOf("pc")).trim();
+												exp = exp.replace(nums[i],n*dpi/6);
+											}else if(nums[i].endsWith("rem")){
+												n = nums[i].substring(0,nums[i].indexOf("rem")).trim();
+												exp = exp.replace(nums[i],n*16);
+											}else if(nums[i].endsWith("in")){
+												n = nums[i].substring(0,nums[i].indexOf("in")).trim();
+												exp = exp.replace(nums[i],n*dpi);
+											}else if(nums[i].endsWith("cm")){
+												n = nums[i].substring(0,nums[i].indexOf("cm")).trim();
+												exp = exp.replace(nums[i],n*dpi*0.3937007874);
+											}else if(nums[i].endsWith("mm")){
+												n = nums[i].substring(0,nums[i].indexOf("mm")).trim();
+												exp = exp.replace(nums[i],n*dpi*0.03937007874);
+											}
+										}
+									}
+									var expression = exp.match(/(^#{0})(\d*\.?\d*\s?\+?\-?\/?\*?\(?\)?)+/g);
+									if(expression == null){
+										return exp;
+									}else{
+										expression = expression.filter(function(v,i){return (v.trim()=="")?false:true});
+										for(i=0;i<expression.length;i++){
+											exp = exp.replace(expression[i],eval(expression[i])+"px ");
+										}
+									}
+									return exp;
+};
+
 ScriptSass.tokenize = function(rawcode,parentstr=""){
 		var par = parentstr;
 		var code = rawcode.replace(/[^\x20-\x7E]/gmi, "").split('"').map(function(v,i){
@@ -293,7 +361,7 @@ ScriptSass.parse = function(ast){
 				}
 				return ast;
 };
-ScriptSass.compileInternal = function(ast){
+ScriptSass.compileInternal = function(ast,base_fs = 16){
 					var i;
 					var css="";
 					if(ast.hasOwnProperty('selectors')){
@@ -303,7 +371,7 @@ ScriptSass.compileInternal = function(ast){
 					}else if(ast.hasOwnProperty('props')){
 						for(i=0;i<ast.props.length;i++){
 							if(ast.props[i].type == "property")
-								css+=ast.props[i].data.name+":"+ast.props[i].data.data+";";
+								css+=ast.props[i].data.name+":"+ScriptSass.evaluateExpression(ast.props[i].data.data, base_fs)+";";
 						}
 					}
 					return css;
