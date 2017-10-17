@@ -154,6 +154,7 @@ ScriptSass.evaluateExpression = function(exp,base_fs=16){
 
 ScriptSass.tokenize = function(rawcode,parentstr=""){
 		var par = parentstr;
+		var imp = [];
 		var code = rawcode.replace(/[^\x20-\x7E]/gmi, "").split('"').map(function(v,i){
 				if(i%2){
 					return v;
@@ -180,7 +181,10 @@ ScriptSass.tokenize = function(rawcode,parentstr=""){
 			if(v.startsWith("@")){
 				if(v.startsWith("@import")){
 					var url = splitWithTail(v," ",1)[1].replace(/^"(.*)"$/, '$1');
-					return {type:"import",data:url};
+					arr.splice(i,1);
+					i--;
+					imp = imp.concat(ScriptSass.importSCSS(url));
+					return "";
 				}
 				if(v.startsWith("@extend")){
 					var selector = splitWithTail(v," ",1)[1].replace(/^"(.*)"$/, '$1');
@@ -252,7 +256,7 @@ ScriptSass.tokenize = function(rawcode,parentstr=""){
 		}).filter(function (v){
 			return (typeof v == "object");
 		});
-		return tokens;
+		return imp.concat(tokens);
 };
 ScriptSass.lexer = function (tk,sel_list = [],flag = 0,varlist = {},mixlist = {}){
 	var i;
@@ -260,7 +264,6 @@ ScriptSass.lexer = function (tk,sel_list = [],flag = 0,varlist = {},mixlist = {}
 	var mixins = mixlist;
 	var imports = [];
 	var data = [];
-	
 		for(i=0;i<tk.length;i++){
 			if(typeof tk[i] == "object"){
 				if(tk[i].type == "variable"){
@@ -271,12 +274,6 @@ ScriptSass.lexer = function (tk,sel_list = [],flag = 0,varlist = {},mixlist = {}
 				}
 				if(tk[i].type == "mixin"){
 					mixins[tk[i].data.name] = {params:tk[i].data.params,data:tk[i].data.data};
-					tk.splice(i,1);
-					i--;
-					continue;
-				}
-				if(tk[i].type == "import"){
-					imports.push(tk[i].data);
 					tk.splice(i,1);
 					i--;
 					continue;
@@ -380,13 +377,17 @@ ScriptSass.compile = function(code){
 					return ScriptSass.compileInternal(ScriptSass.parse(ScriptSass.lexer(ScriptSass.tokenize(code))));
 };
 ScriptSass.compileInline = function(){
+		var dfd = $.Deferred();
 		$('code[type="sass"]').each(function (){
 			$(this).hide();
 			code = $(this).html();
 			($('head').find('style').length > 0) ? $('head style').append(ScriptSass.compile(code)):$('head').append('<style>'+ScriptSass.compile(code)+'</style>');
 		});
+		dfd.resolve();
+		return dfd.promise();
 };
 ScriptSass.load = function(file){
+				var dfd = $.Deferred();
 				var code="";
 				$.ajax({
 					url: file,
@@ -396,6 +397,22 @@ ScriptSass.load = function(file){
 					async: false
 				});
 				($('head').find('style').length > 0) ? $('head style').append(ScriptSass.compile(code)):$('head').append('<style>'+ScriptSass.compile(code)+'</style>');
+				dfd.resolve();
+				return dfd.promise();
+};
+
+ScriptSass.importSCSS = function(name){
+				var filename = name.substring(name.lastIndexOf('/') + 1);
+				filename = name.substring(0,name.lastIndexOf('/'))+"_"+filename+".sass";
+				var code="";
+				$.ajax({
+					url: filename,
+					success: function (response){
+						code = response;
+					},
+					async: false
+				});
+				return ScriptSass.tokenize(code);
 };
 
 example = ScriptSass.compile(' \

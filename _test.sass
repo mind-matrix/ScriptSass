@@ -1,0 +1,49 @@
+$bg1: #6abae8;
+$green: #60ff63;
+$bg2: #4c4c4c;
+$col: #ffffff;
+$hov: hover;
+$border: 1px solid black;
+body{
+	padding: 10px;
+	line-height: 1.8em;
+	background-color: $bg1;
+	font-size: 14pt;
+	font-family: Arial,Helvetica;
+}
+#content{
+	.green{
+		padding: 4px;
+		border-radius: 8px;
+		background-color: $bg2 !important;
+		color: $green !important;
+	}
+	.black{
+		@extend green;
+		padding: 4px;
+		border-radius: 8px;
+		background-color: $bg2 !important;
+		color: $col;
+	}
+	.blue{
+		padding: 4px;
+		border-radius: 8px;
+		background-color: $bg2 !important;
+		color: #8cbdff !important;
+	}
+	.dblue{
+		padding: 4px;
+		border-radius: 8px;
+		background-color: $bg2 !important;
+		color: #86a4cc !important;
+		font-style: oblique;
+	}
+	header{
+		text-align: center;
+		font-size: 16pt;
+		border: $border;
+		&:$hov{
+			cursor: pointer;
+		}
+	}
+}

@@ -2,9 +2,25 @@
 <html lang="en">
 <head>
 	<title>A JS SCSS Compiler</title>
+<link rel="stylesheet" href="loader.css" />
 </head>
 <body>
 <div>
+<div class="loader-overlay">
+	<div class="preloader-wrapper big active loader">
+		<div class="spinner-layer spinner-blue-only">
+			<div class="circle-clipper left">
+				<div class="circle"></div>
+				</div><div class="gap-patch">
+				<div class="circle"></div>
+				</div><div class="circle-clipper right">
+				<div class="circle"></div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<div id="content">
 <header>ScriptSass - Introduction</header>
 	The ScriptSass is a javascript Sass dynamic compiler. It works both with .sass files and inline scss code.
 	Just load the file in a script tag using this line of javascript code -<br/>
@@ -28,7 +44,7 @@
 	<ul>
 		<li>SCSS syntax, not exactly Sass syntax. Semi-colons at end of statements are must</li>
 		<li>Sass variables (except Maps)</li>
-		<li>extend directive</li>
+		<li>import and extend directives</li>
 		<li>mixins</li>
 		<li>nested css selectors</li>
 		<li>Code minification</li>
@@ -37,13 +53,12 @@
 	Update
 	<ul>
 		<li>Added support for nested selectors</li>
-		<li>Removed support for @import to make some improvements to it</li>
+		<li>Added new import directive support</li>
 		<li>Added mixin support (may have gotchas)</li>
 		<li>Faster processing</li>
 	</ul>
 	Up Next
 	<ul>
-		<li>Improved @import support</li>
 		<li>Conditional directives</li>
 		<li>Maps and basic map functions</li>
 	</ul>
@@ -51,6 +66,7 @@
 	This page is compiled with ScriptSass! See the <a class="vs">source code</a> to get an idea of how to implement it.
 </div>
 <code type="sass">
+	@import test;
 	$uc: #ffe68c;
 	.update{
 		color: green;
@@ -72,10 +88,10 @@
 <script src="jquery-3.2.1.min.js"></script>
 <script src="scriptsass.js"></script>
 <script>
-
 $(document).ready(function (){
-	ScriptSass.load("style.sass");
-	ScriptSass.compileInline();
+	ScriptSass.compileInline().done(function (){
+		$('.loader-overlay').fadeOut(500);
+	});
 });
 </script>
 </body>

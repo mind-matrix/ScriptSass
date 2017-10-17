@@ -15,24 +15,24 @@ Some of the advantages are:
 5. It can also evaluate SCSS expressions involving px and % together.
 
 Some of the disadvantages are:
-1. Page may flicker upon initial load because compiling the SCSS takes some time
+1. Page may flicker upon initial load because compiling the SCSS takes some time (see [best practices](#best_practices))
 2. CPU usage of end-user may increase
 
-The big takeaway - it's still only 8 kB (minified)
+The big takeaway - it's still only 15 kB (not minified)
 For a hands-on experience of it's working, go to [docs](http://mskies.web44.net/scriptsass/index.html).
 
 Currently it supports:
 
 - SCSS syntax, not exactly Sass syntax (Semi-colons at end of statements and braces, where required, are a must)
 - Sass variables (except Maps)
-- @extend directive
+- @import and @extend directives
 - @mixin
 - Nested CSS Selectors
 - Code minification
 
 I am planning to add:
 
-- [ ] Improved @import support
+- [x] Improved @import support
 - [ ] Conditional directives
 - [ ] Maps and basic map functions
 - [x] SCSS expressions
@@ -146,6 +146,66 @@ You can use any of the above functions separately to get/use the respective outp
 I hope the [source code](http://mskies.web44.net/scriptsass/scriptsass.current.js) and included comments will suffice to explain each of these functions to all viewers.
 If not, you can always contact me or leave an email.
 
+<a name="best_practices">
+
+## Best Practices
+
+Since SassScript compiles SCSS code on the client-side and it takes some time, the page may flicker on initial load. To fix this, it is best to add a preloader to the web page 
+and show the contents only after compilation is done. To make things easier, I have included a ```loader.css``` file in the repository. This file has been specifically compiled 
+using **Materialize.css** for a custom spinner preloader. But you can also use your own preloader. To use this, add the stylesheet to the head section of your web page and then 
+add the spinner code. An example usage case would be :
+
+```HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <title>SassScript with Preloader</title>
+ 
+ <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width"/>
+ <meta name="web_author" content="Sagnik Modak" />
+ <meta name="language" CONTENT="ES" />
+ 
+ <link rel="stylesheet" href="loader.css" />
+</head>
+<body>
+/* Preloader Code */ 
+ <div class="loader-overlay">
+  <div class="preloader-wrapper big active loader">
+   <div class="spinner-layer spinner-blue-only">
+    <div class="circle-clipper left">
+    <div class="circle"></div>
+    </div><div class="gap-patch">
+    <div class="circle"></div>
+    </div><div class="circle-clipper right">
+    <div class="circle"></div>
+    </div>
+   </div>
+  </div>
+ </div>
+ 
+/* Your content */
+
+/* Scripts */
+ <script src="jquery-3.2.1.min.js"></script>
+ <script src="scriptsass.js"></script>
+ <script>
+ 
+  $(document).ready(function (){
+  
+	  ScriptSass.compileInline().done(function (){ // Compile the Inline SCSS Codes. You can do the same for the load() function too
+	  
+		  $('.loader-overlay').fadeOut(500); // Fade Out Loader and Overlay once compilation is done 
+		  
+	  });
+	  
+  });
+  
+ </script>
+</body>
+</html>
+```
+</a>
 ## Deployment
 
 This project is NOT YET PRODUCTION-READY
