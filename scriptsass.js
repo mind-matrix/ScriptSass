@@ -376,13 +376,30 @@ ScriptSass.compileInternal = function(ast,base_fs = 16){
 ScriptSass.compile = function(code){
 					return ScriptSass.compileInternal(ScriptSass.parse(ScriptSass.lexer(ScriptSass.tokenize(code))));
 };
-ScriptSass.compileInline = function(){
+ScriptSass.compileInline = function(inlineUnrestricted = false){
 		var dfd = $.Deferred();
+		var ast;
+		var mixins = [];
+		var vars = [];
 		$('code[type="sass"]').each(function (){
 			$(this).hide();
 			code = $(this).html();
+			ast = ScriptSass.lexer(ScriptSass.tokenize(code));
+			for(v in ast.mixes){mixins[v] = ast.mixes[v]};
+			for(v in ast.variables){vars[v] = ast.variables[v]};
 			($('head').find('style').length > 0) ? $('head style').append(ScriptSass.compile(code)):$('head').append('<style>'+ScriptSass.compile(code)+'</style>');
 		});
+		if(inlineUnrestricted){
+			$('[style]').each(function (){
+				code = ScriptSass.compileInternal(ScriptSass.parse(ScriptSass.lexer(ScriptSass.tokenize($(this).attr('style')),[],1,vars,mixins)));
+				$(this).attr('style',code);
+			});
+		}else{
+			$('.scss[style]').each(function (){
+				code = ScriptSass.compileInternal(ScriptSass.parse(ScriptSass.lexer(ScriptSass.tokenize($(this).attr('style')),[],1,vars,mixins)));
+				$(this).attr('style',code);
+			});
+		}
 		dfd.resolve();
 		return dfd.promise();
 };

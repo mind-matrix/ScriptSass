@@ -1,6 +1,6 @@
 # ScriptSass
 <p align="center">
-<img src="http://mskies.web44.net/thumbs/scriptsass.png" width="250" />
+<img src="scriptsass.png" width="250" />
 </p>
 A Javascript-based Sass/SCSS interpreter
 
@@ -18,7 +18,7 @@ Some of the disadvantages are:
 1. Page may flicker upon initial load because compiling the SCSS takes some time (see [best practices](#best_practices))
 2. CPU usage of end-user may increase
 
-The big takeaway - it's still only 15 kB (not minified)
+The big takeaway - it's still only 11 kB (minified)
 For a hands-on experience of it's working, go to [docs](http://mskies.web44.net/scriptsass/index.html).
 
 Currently it supports:
@@ -29,6 +29,7 @@ Currently it supports:
 - @mixin
 - Nested CSS Selectors
 - Code minification
+- Inline SCSS
 
 I am planning to add:
 
@@ -76,10 +77,12 @@ ScriptSass.load("css/styles.sass");
 ```
 
 #### From Inline SCSS Code
-ScriptSass supports a special inline SCSS code. Wrap up your SCSS code inside a ```<code type="sass"></code>``` block. For instance:
+
+ScriptSass supports inline SCSS code blocks. Wrap up your SCSS code inside a ```<code type="sass"></code>``` block. For instance:
 
 ```HTML
 <code type="sass">
+	$uc: #ffe68c;
 	.update{
 		color: green;
 		ul{
@@ -105,6 +108,28 @@ ScriptSass.compileInline();
 ```
 
 Basically, it compiles all SCSS code within all code blocks (such as the previous) found in the entire document.
+
+With the latest update, ScriptSass now supports more than just inline code blocks. *It supports in-element codes too!*
+
+##### Computed style properties
+
+ScriptSass can compile inline style properties too. For example, say we have the above code block and an element, say a div as follows :
+
+```HTML
+<div id="exampleDiv" class="scss" style="color:$uc">
+ <!--content here-->
+</div>
+```
+Now the variable $uc is defined in the code block. But we can use this in here too! Notice that we have added the ```class="scss"``` to the div. Without that,
+ScriptSass would not compile it. However, if we want ScriptSass to compile all style elements anywhere on the page, even without the special *.scc* class, we
+need to do the following modification to our **compileInline()** function :
+```JavaScript
+ScriptSass.compileInline(true);
+```
+
+Simple, right? Basically, it sets the internal *inlineUnrestricted* flag to true and hence compiles everything.
+
+**NOTE:** We can do the same for mixins too! Simply define a mixin in any sass code block as above and then call it inside a style element.
 
 #### From source SCSS as String
 
@@ -206,6 +231,7 @@ add the spinner code. An example usage case would be :
 </html>
 ```
 </a>
+
 ## Deployment
 
 This project is NOT YET PRODUCTION-READY
@@ -233,3 +259,4 @@ This project is licensed under the GNU AFFERO GENERAL PUBLIC LICENSE - see the [
 * The function from [this](https://stackoverflow.com/a/5582719/7533368) StackOverflow Answer really helped me
 * [This](https://medium.com/@kosamari/how-to-be-a-compiler-make-a-compiler-with-javascript-4a8a13d473b4) Medium post was a source of inspiration
 * Thanks to my friends for being supportive
+* I have used some [MaterializeCSS](https://materializecss.com/) components
