@@ -70,16 +70,42 @@ ScriptSass.isProperty = function(v){
 							return false;
 	};
 
-ScriptSass.replaceVars = function(str,vars){
+ScriptSass.replaceVars = function(str,vars,flag = 0){
 						var i;
 						var parts = str.split(/([:\s])+/g);
 						for(i=0;i<parts.length;i++){
 							if(parts[i].startsWith("$") && vars.hasOwnProperty(parts[i]))
 								parts[i] = vars[parts[i]].data;
 						}
-						return parts.join("");
+						if(flag)
+							return ScriptSass.evaluateFunctions(parts.join(""),vars);
+						else
+							return parts.join("");
 };
 	
+ScriptSass.evaluateFunctions = function(str,vars){
+								//function for maps
+								if(str.indexOf("map-get") != -1)
+									str = ScriptSass.mapGet(str,vars);
+								return str;
+};
+ScriptSass.mapGet = function(str,vars){
+								var i,arg,map_name,key;
+								var parts = str.split(/(^|\s+)map\-get/g);
+								for(i=0;i<parts.length;i++){
+									if(parts[i].trim().startsWith("(") && parts[i].trim().endsWith(")")){
+										arg = parts[i].substring(1,parts[i].length - 1).trim().split(",");
+										map_name = arg[0].trim();
+										key = arg[1].trim();
+										if(map_name.startsWith("$") && vars.hasOwnProperty(map_name)){
+											if(vars[map_name].type == "map"){
+												parts[i] = vars[map_name].data[key];
+											}
+										}
+									}
+								}
+								return parts.join("");
+};
 ScriptSass.replacePlaceholder = function(name,parentstr){
 							if(name.indexOf("&") > -1){
 								parentstr = parentstr.trim();
@@ -244,8 +270,8 @@ ScriptSass.tokenize = function(rawcode,parentstr=""){
 						var pair,key,val;
 						for(k=0;k<pairs.length;k++){
 							pair = pairs[k].split(":");
-							key = pair[0];
-							val = pair[1];
+							key = pair[0].replace(/[\)\(\s]/g,"");
+							val = pair[1].replace(/[\)\)\s]/g,"");
 							map[key] = val;
 						}
 						var_data = map;
@@ -318,7 +344,7 @@ ScriptSass.parse = function(ast){
 									if(!ast.selectors[i].data.variables.hasOwnProperty(attr))
 										ast.selectors[i].data.variables[attr]=ast.variables[attr];
 								}
-								ast.selectors[i].data.props[j].data.data = ScriptSass.replaceVars(ast.selectors[i].data.props[j].data.data,ast.selectors[i].data.variables);
+								ast.selectors[i].data.props[j].data.data = ScriptSass.replaceVars(ast.selectors[i].data.props[j].data.data,ast.selectors[i].data.variables,1);
 							}else if(ast.selectors[i].data.props[j].type == "include"){
 								var params = ast.selectors[i].data.props[j].params;
 								var fname = ast.selectors[i].data.props[j].name;
@@ -341,7 +367,7 @@ ScriptSass.parse = function(ast){
 					for(j=0;j<ast.props.length;j++){
 							if(ast.props[j].type == "property"){
 								ast.props[j].data.name = ScriptSass.replaceVars(ast.props[j].data.name,ast.variables);
-								ast.props[j].data.data = ScriptSass.replaceVars(ast.props[j].data.data,ast.variables);
+								ast.props[j].data.data = ScriptSass.replaceVars(ast.props[j].data.data,ast.variables,1);
 							}else if(ast.props[j].type == "include"){
 								var params = ast.props[j].params;
 								var fname = ast.props[j].name;
@@ -432,8 +458,7 @@ ScriptSass.importSCSS = function(name){
 				return ScriptSass.tokenize(code);
 };
 
-example = ScriptSass.compile(' \
-	@import test; \
+var example = ScriptSass.compile(' \
 	@mixin $cool($v1){ \
 		padding: $v1; \
 	} \
@@ -446,8 +471,10 @@ example = ScriptSass.compile(' \
 			border: $g; \
 		} \
 	} \
-	header:hover{ \
-		color: blue; \
+	$map1: (pad: 10px, col: green);  \
+	body{ \
+		background-color: map-get($map1,col);\
 	}'
 	);
+console.log("Printing out load");
 console.log(example);
