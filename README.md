@@ -19,7 +19,7 @@ Some of the disadvantages are:
 2. CPU usage of end-user may increase
 
 The big takeaway - it's still only 11 kB (minified)
-For a hands-on experience of it's working, go to [docs](http://mskies.web44.net/scriptsass/index.html).
+For a hands-on experience of it's working, go to [docs](http://staying.me/scriptsass/index.html).
 
 Currently it supports:
 
